@@ -26,6 +26,10 @@ def extract_features(file_name):
 audio_files = ['uploads/kotor_1.mp3', 'uploads/kotor_2.mp3', 'uploads/kotor_3.mp3']
 labels = ['mengumpat', 'mengumpat', 'mengumpat']
 
+for i in range(1, 11):
+    audio_files.append(f'uploads/psg{i}.mp3')
+    labels.append('mengumpat')
+
 features = []
 for file_name in audio_files:
     try:
