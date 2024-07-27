@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AED</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="images.jpeg" type="image/x-icon" />
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="socket.io.js"></script>
+  </head>
+  <body>
+    <div class="aed">AED</div>
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Cari Kelas..." />
+      <a href="#" class="search" onclick="searchClass()">
+        <i data-feather="search"></i>
+      </a>
+    </div>
+    <hr class="divider" />
+    <div class="container">
+      <div id="home" class="class-table">
+        <h1>Tabel Input Sendiri</h1>
+        <table id="editableTable">
+          <thead>
+            <tr>
+              <th>Nomor</th>
+              <th>Kelas</th>
+              <th>Jam</th>
+              <th>Status</th>
+              <th>ID ESP32</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <a href="#" class="add-row"><i data-feather="plus"></i></a>
+      </div>
+      <div id="kelasX" class="class-table" style="display: none">
+        <h1>Kelas X</h1>
+        <table id="kelasXTable">
+          <thead>
+            <tr>
+              <th>Nomor</th>
+              <th>Kelas</th>
+              <th>Jam</th>
+              <th>Status</th>
+              <th>ID ESP32</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <a href="#" class="add-row"><i data-feather="plus"></i></a>
+      </div>
+      <div id="kelasXI" class="class-table" style="display: none">
+        <h1>Kelas XI</h1>
+        <table id="kelasXITable">
+          <thead>
+            <tr>
+              <th>Nomor</th>
+              <th>Kelas</th>
+              <th>Jam</th>
+              <th>Status</th>
+              <th>ID ESP32</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <a href="#" class="add-row"><i data-feather="plus"></i></a>
+      </div>
+      <div id="kelasXII" class="class-table" style="display: none">
+        <h1>Kelas XII</h1>
+        <table id="kelasXIITable">
+          <thead>
+            <tr>
+              <th>Nomor</th>
+              <th>Kelas</th>
+              <th>Jam</th>
+              <th>Status</th>
+              <th>ID ESP32</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <a href="#" class="add-row"><i data-feather="plus"></i></a>
+      </div>
+    </div>
+    <div class="navbar">
+      <a href="#" onclick="showClass('home')">
+        <i data-feather="home"></i> Home
+      </a>
+      <a href="#" onclick="showClass('kelasX')">
+        <i data-feather="book-open"></i> Kelas X
+      </a>
+      <a href="#" onclick="showClass('kelasXI')">
+        <i data-feather="book-open"></i> Kelas XI
+      </a>
+      <a href="#" onclick="showClass('kelasXII')">
+        <i data-feather="book-open"></i> Kelas XII
+      </a>
+    </div>
+    <button id="navbarToggle">
+      <i data-feather="menu"></i>
+    </button>
+    <div class="clock" id="clock"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+      feather.replace();
+
+      $(document).ready(function () {
+        setInterval(() => {
+          const clock = document.getElementById("clock");
+          if (clock) {
+            const now = new Date();
+            clock.innerText = now.toLocaleTimeString();
+          }
+          updateTimeInTable();
+        }, 1000);
+
+        $("#classifyForm").on("submit", function (event) {
+          event.preventDefault();
+          const formData = new FormData(this);
+
+          $.ajax({
+            url: "/classify",
+            method: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+              if (response.error) {
+                $("#result").text("Error: " + response.error);
+              } else {
+                $("#result").text("Klasifikasi: " + response.result);
+              }
+            },
+          });
+        });
+
+        document.querySelectorAll(".add-row").forEach((button) => {
+          button.addEventListener("click", function (event) {
+            event.preventDefault();
+            const tableId = button
+              .closest(".class-table")
+              .querySelector("table").id;
+            addRowToTable(tableId);
+          });
+        });
+
+        document
+          .getElementById("navbarToggle")
+          .addEventListener("click", toggleNavbar);
+
+        $("#searchInput").on("input", searchClass);
+
+        simulateESPConnection();
+      });
+    </script>
+  </body>
+</html>
